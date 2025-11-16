@@ -13,35 +13,6 @@ document.querySelectorAll('.nav-links a').forEach(link => {
     });
 });
 
-// Testimonial Slider
-const testimonials = document.querySelectorAll('.testimonial');
-const dots = document.querySelectorAll('.dot');
-let currentSlide = 0;
-
-function showSlide(n) {
-    testimonials.forEach(testimonial => testimonial.classList.remove('active'));
-    dots.forEach(dot => dot.classList.remove('active'));
-    
-    currentSlide = (n + testimonials.length) % testimonials.length;
-    
-    testimonials[currentSlide].classList.add('active');
-    dots[currentSlide].classList.add('active');
-}
-
-// Auto slide testimonials
-if (testimonials.length > 0) {
-    setInterval(() => {
-        showSlide(currentSlide + 1);
-    }, 5000);
-}
-
-// Dot click events
-dots.forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-        showSlide(index);
-    });
-});
-
 // Form Submission to Google Sheets - WORKING VERSION
 document.getElementById('leadForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -65,7 +36,7 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
     }
     
     // ⚠️ REPLACE WITH YOUR ACTUAL GOOGLE APPS SCRIPT URL ⚠️
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzsxzFcyeyTbm1Bb0bK2m0JiAnYE9n2mSZD-84O8d2HWysYzyx8wbadLROiRNphv1-fCA/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzP0antvw3ogb2WIkp7lv6aFD-n5UTNnKLqZuR2XGZyDVKgk7TXzHSYNN40lYvm6ZCPMA/exec';
     
     fetch(scriptURL, {
         method: 'POST',
