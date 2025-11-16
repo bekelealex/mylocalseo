@@ -17,7 +17,7 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
     const urlEncodedData = new URLSearchParams(formData).toString();
     
     // REPLACE THIS WITH YOUR ACTUAL DEPLOYED SCRIPT URL
-    const scriptURL = 'https://script.google.com/macros/s/ACTUAL_SCRIPT_ID_HERE/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzV-_xt7T8KLUR3dcvzHK6b2ePDkeliBs1y1xPCFUarwDcxGFT15S5cuJ15q_FsJubwqQ/exec';
     
     // Use no-cors mode and URL-encoded data
     fetch(scriptURL, {
