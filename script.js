@@ -36,7 +36,7 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
     }
     
     // ⚠️ REPLACE WITH YOUR ACTUAL GOOGLE APPS SCRIPT URL ⚠️
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzP0antvw3ogb2WIkp7lv6aFD-n5UTNnKLqZuR2XGZyDVKgk7TXzHSYNN40lYvm6ZCPMA/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyqer9aDQ7P2L2F7oRPbrcNoduTcNvRoiLpEQZIWluibeIeYdcKR-6NEeLZaTFupTNSyA/exec';
     
     fetch(scriptURL, {
         method: 'POST',
