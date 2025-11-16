@@ -55,7 +55,7 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
     const data = Object.fromEntries(formData);
     
     // Replace with your Google Apps Script URL
-    const scriptURL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+    const scriptURL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'; // Replace with actual Script ID
     
     fetch(scriptURL, {
         method: 'POST',
@@ -76,7 +76,7 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
         }, 5000);
     })
     .catch(error => {
-        document.getElementById('formMessage').textContent = 'Sorry, there was an error sending your message. Please try again or contact me directly at hello@alelignbekele.com';
+        document.getElementById('formMessage').textContent = 'Sorry, there was an error sending your message. Please try again or contact me directly at bekelealex57@gmail.com';
         document.getElementById('formMessage').className = 'form-message error';
         document.getElementById('formMessage').style.display = 'block';
         console.error('Error:', error);
