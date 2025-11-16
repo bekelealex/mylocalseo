@@ -1,4 +1,4 @@
-// Form Submission - SIMPLIFIED VERSION
+// Form Submission - CORRECTED VERSION
 document.getElementById('leadForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -11,48 +11,46 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
     submitButton.disabled = true;
     formMessage.style.display = 'none';
     
-    // Get form data as plain object
+    // Get form data
     const formData = new FormData(this);
-    const data = {
-        name: formData.get('name') || '',
-        email: formData.get('email') || '',
-        phone: formData.get('phone') || '',
-        business: formData.get('business') || '',
-        message: formData.get('message') || ''
-    };
     
-    console.log('Sending data:', data);
-    
-    // ⚠️ REPLACE WITH YOUR ACTUAL SCRIPT URL ⚠️
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzemwQ9E7slaT_s_mEq_89sIh0W4nydUaqSAdXXJa9dtE9L0vG4kjqiybytja74fPTqoA/exec';
-    
-    // Create URL parameters
-    const params = new URLSearchParams();
-    for (const key in data) {
-        params.append(key, data[key]);
+    // Convert to URL-encoded string
+    const urlEncodedData = new URLSearchParams();
+    for (const [key, value] of formData.entries()) {
+        urlEncodedData.append(key, value);
     }
+    
+    console.log('Sending data:', urlEncodedData.toString());
+    
+    // ⚠️ REPLACE WITH YOUR ACTUAL DEPLOYED SCRIPT URL ⚠️
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbx1_YNLpdGuIZYxE8eHhX9FnksyL8zm3DBnSMfkqe20E4byRdy4z9DvAt5yX_2XVI7_XA/exec';
     
     fetch(scriptURL, {
         method: 'POST',
-        body: params
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: urlEncodedData
     })
     .then(response => {
+        console.log('Response status:', response.status);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.json();
     })
-    .then(result => {
-        console.log('Success:', result);
-        if (result.status === 'success') {
+    .then(data => {
+        console.log('Success response:', data);
+        if (data.status === 'success') {
             formMessage.textContent = 'Thank you! Your message has been sent successfully.';
             formMessage.className = 'form-message success';
+            this.reset();
         } else {
-            throw new Error(result.message || 'Server error');
+            throw new Error(data.message || 'Server returned error');
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Full error:', error);
         formMessage.textContent = 'Sorry, there was an error. Please contact me directly at bekelealex57@gmail.com';
         formMessage.className = 'form-message error';
     })
@@ -61,9 +59,8 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
         submitButton.textContent = originalText;
         submitButton.disabled = false;
         
-        // Only reset form on success
+        // Hide success message after 5 seconds
         if (formMessage.className.includes('success')) {
-            this.reset();
             setTimeout(() => {
                 formMessage.style.display = 'none';
             }, 5000);
