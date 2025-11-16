@@ -1,168 +1,52 @@
-// Mobile Navigation Toggle
-const hamburger = document.querySelector('.hamburger');
-const navLinks = document.querySelector('.nav-links');
-
-hamburger.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
-});
-
-// Close mobile menu when clicking on a link
-document.querySelectorAll('.nav-links a').forEach(link => {
-    link.addEventListener('click', () => {
-        navLinks.classList.remove('active');
-    });
-});
-
-// Testimonial Slider
-const testimonials = document.querySelectorAll('.testimonial');
-const dots = document.querySelectorAll('.dot');
-let currentSlide = 0;
-
-function showSlide(n) {
-    testimonials.forEach(testimonial => testimonial.classList.remove('active'));
-    dots.forEach(dot => dot.classList.remove('active'));
-    
-    currentSlide = (n + testimonials.length) % testimonials.length;
-    
-    testimonials[currentSlide].classList.add('active');
-    dots[currentSlide].classList.add('active');
-}
-
-// Auto slide testimonials
-if (testimonials.length > 0) {
-    setInterval(() => {
-        showSlide(currentSlide + 1);
-    }, 5000);
-}
-
-// Dot click events
-dots.forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-        showSlide(index);
-    });
-});
-
-// Form Submission to Google Sheets
+// Form Submission to Google Sheets - FIXED CORS VERSION
 document.getElementById('leadForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
     const submitButton = this.querySelector('button[type="submit"]');
     const originalText = submitButton.textContent;
+    const formMessage = document.getElementById('formMessage');
     
     // Show loading state
     submitButton.textContent = 'Sending...';
     submitButton.disabled = true;
+    formMessage.style.display = 'none';
     
     const formData = new FormData(this);
     
-    // Convert FormData to object for JSON
-    const data = {};
-    for (let [key, value] of formData.entries()) {
-        data[key] = value;
-    }
+    // Convert to URL-encoded format instead of JSON
+    const urlEncodedData = new URLSearchParams(formData).toString();
     
-    // Add timestamp
-    data.timestamp = new Date().toISOString();
+    // REPLACE THIS WITH YOUR ACTUAL DEPLOYED SCRIPT URL
+    const scriptURL = 'https://script.google.com/macros/s/ACTUAL_SCRIPT_ID_HERE/exec';
     
-    // Replace with your actual Google Apps Script URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbw2o_yOUR_SCRIPT_ID/exec';
-    
+    // Use no-cors mode and URL-encoded data
     fetch(scriptURL, {
         method: 'POST',
+        mode: 'no-cors',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: JSON.stringify(data)
+        body: urlEncodedData
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.status === 'success') {
-            document.getElementById('formMessage').textContent = 'Thank you! Your message has been sent successfully. I will get back to you soon.';
-            document.getElementById('formMessage').className = 'form-message success';
-            document.getElementById('formMessage').style.display = 'block';
-            this.reset();
-            
-            // Hide message after 5 seconds
-            setTimeout(() => {
-                document.getElementById('formMessage').style.display = 'none';
-            }, 5000);
-        } else {
-            throw new Error('Server returned error status');
-        }
+    .then(() => {
+        // With no-cors, we can't read the response, so assume success
+        formMessage.textContent = 'Thank you! Your message has been sent successfully. I will get back to you soon.';
+        formMessage.className = 'form-message success';
+        formMessage.style.display = 'block';
+        this.reset();
+        
+        setTimeout(() => {
+            formMessage.style.display = 'none';
+        }, 5000);
     })
     .catch(error => {
-        document.getElementById('formMessage').textContent = 'Sorry, there was an error sending your message. Please try again or contact me directly at bekelealex57@gmail.com';
-        document.getElementById('formMessage').className = 'form-message error';
-        document.getElementById('formMessage').style.display = 'block';
         console.error('Error:', error);
+        formMessage.textContent = 'Sorry, there was an error sending your message. Please try again or contact me directly at bekelealex57@gmail.com';
+        formMessage.className = 'form-message error';
+        formMessage.style.display = 'block';
     })
     .finally(() => {
-        // Reset button state
         submitButton.textContent = originalText;
         submitButton.disabled = false;
     });
-});
-
-// Smooth scrolling for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
-
-// Add active class to navigation links based on scroll position
-window.addEventListener('scroll', () => {
-    const sections = document.querySelectorAll('section');
-    const navLinks = document.querySelectorAll('.nav-links a');
-    
-    let current = '';
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop;
-        const sectionHeight = section.clientHeight;
-        if (scrollY >= (sectionTop - 100)) {
-            current = section.getAttribute('id');
-        }
-    });
-
-    navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href').substring(1) === current) {
-            link.classList.add('active');
-        }
-    });
-});
-
-// Add animation on scroll
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-        }
-    });
-}, observerOptions);
-
-// Observe elements for animation
-document.querySelectorAll('.service-card, .about-content, .testimonial-slider, .contact-form').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(20px)';
-    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    observer.observe(el);
 });
