@@ -12,55 +12,31 @@ document.querySelectorAll('.nav-links a').forEach(link => {
     });
 });
 
-// FORM SUBMISSION TO GOOGLE SHEETS
+// WORKING FORM - OPENS EMAIL
 document.getElementById('leadForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const submitButton = this.querySelector('button[type="submit"]');
-    const originalText = submitButton.textContent;
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    const business = document.getElementById('business').value;
+    const message = document.getElementById('message').value;
+    
+    const subject = `New Contact from ${name}`;
+    const body = `Name: ${name}%0AEmail: ${email}%0APhone: ${phone}%0ABusiness: ${business}%0AMessage: ${message}`;
+    
+    window.location.href = `mailto:bekelealex57@gmail.com?subject=${subject}&body=${body}`;
+    
     const formMessage = document.getElementById('formMessage');
+    formMessage.textContent = 'Thank you! Your email client is opening. Please send the message.';
+    formMessage.className = 'form-message success';
+    formMessage.style.display = 'block';
     
-    // Show loading state
-    submitButton.textContent = 'Sending...';
-    submitButton.disabled = true;
-    formMessage.style.display = 'none';
+    this.reset();
     
-    // Get form data
-    const formData = new FormData(this);
-    const urlEncodedData = new URLSearchParams(formData).toString();
-    
-    // ⚠️ YOUR GOOGLE APPS SCRIPT URL GOES HERE ⚠️
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxWju7LIP4ktmQ5C-iuJlK5SKA45_-IoebzkEoIbQtk7STVu1wjUJGJP2HbOo_wHxJoXQ/exec';
-    
-    fetch(scriptURL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: urlEncodedData
-    })
-    .then(response => response.text())
-    .then(() => {
-        // SUCCESS
-        formMessage.textContent = 'Thank you! Your message has been sent successfully.';
-        formMessage.className = 'form-message success';
-        formMessage.style.display = 'block';
-        this.reset();
-    })
-    .catch(error => {
-        // ERROR
-        formMessage.textContent = 'Sorry, there was an error. Please contact me directly at bekelealex57@gmail.com';
-        formMessage.className = 'form-message error';
-        formMessage.style.display = 'block';
-    })
-    .finally(() => {
-        submitButton.textContent = originalText;
-        submitButton.disabled = false;
-        
-        setTimeout(() => {
-            formMessage.style.display = 'none';
-        }, 5000);
-    });
+    setTimeout(() => {
+        formMessage.style.display = 'none';
+    }, 8000);
 });
 
 // Smooth scrolling
