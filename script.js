@@ -29,9 +29,11 @@ function showSlide(n) {
 }
 
 // Auto slide testimonials
-setInterval(() => {
-    showSlide(currentSlide + 1);
-}, 5000);
+if (testimonials.length > 0) {
+    setInterval(() => {
+        showSlide(currentSlide + 1);
+    }, 5000);
+}
 
 // Dot click events
 dots.forEach((dot, index) => {
@@ -52,10 +54,18 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
     submitButton.disabled = true;
     
     const formData = new FormData(this);
-    const data = Object.fromEntries(formData);
+    
+    // Convert FormData to object for JSON
+    const data = {};
+    for (let [key, value] of formData.entries()) {
+        data[key] = value;
+    }
+    
+    // Add timestamp
+    data.timestamp = new Date().toISOString();
     
     // Replace with your actual Google Apps Script URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbw2o_yOUR_SCRIPT_ID/exec'; // Replace with your actual Script ID
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbw2o_yOUR_SCRIPT_ID/exec';
     
     fetch(scriptURL, {
         method: 'POST',
@@ -64,7 +74,12 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
         },
         body: JSON.stringify(data)
     })
-    .then(response => response.json()) // Parse the JSON response from the script
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.status === 'success') {
             document.getElementById('formMessage').textContent = 'Thank you! Your message has been sent successfully. I will get back to you soon.';
@@ -77,7 +92,7 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
                 document.getElementById('formMessage').style.display = 'none';
             }, 5000);
         } else {
-            throw new Error('Something went wrong');
+            throw new Error('Server returned error status');
         }
     })
     .catch(error => {
