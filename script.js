@@ -1,4 +1,4 @@
-// Form Submission to Google Sheets - FIXED CORS VERSION
+// Form Submission - SIMPLIFIED VERSION
 document.getElementById('leadForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -11,42 +11,62 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
     submitButton.disabled = true;
     formMessage.style.display = 'none';
     
+    // Get form data as plain object
     const formData = new FormData(this);
+    const data = {
+        name: formData.get('name') || '',
+        email: formData.get('email') || '',
+        phone: formData.get('phone') || '',
+        business: formData.get('business') || '',
+        message: formData.get('message') || ''
+    };
     
-    // Convert to URL-encoded format instead of JSON
-    const urlEncodedData = new URLSearchParams(formData).toString();
+    console.log('Sending data:', data);
     
-    // REPLACE THIS WITH YOUR ACTUAL DEPLOYED SCRIPT URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzV-_xt7T8KLUR3dcvzHK6b2ePDkeliBs1y1xPCFUarwDcxGFT15S5cuJ15q_FsJubwqQ/exec';
+    // ⚠️ REPLACE WITH YOUR ACTUAL SCRIPT URL ⚠️
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzemwQ9E7slaT_s_mEq_89sIh0W4nydUaqSAdXXJa9dtE9L0vG4kjqiybytja74fPTqoA/exec';
     
-    // Use no-cors mode and URL-encoded data
+    // Create URL parameters
+    const params = new URLSearchParams();
+    for (const key in data) {
+        params.append(key, data[key]);
+    }
+    
     fetch(scriptURL, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: urlEncodedData
+        body: params
     })
-    .then(() => {
-        // With no-cors, we can't read the response, so assume success
-        formMessage.textContent = 'Thank you! Your message has been sent successfully. I will get back to you soon.';
-        formMessage.className = 'form-message success';
-        formMessage.style.display = 'block';
-        this.reset();
-        
-        setTimeout(() => {
-            formMessage.style.display = 'none';
-        }, 5000);
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(result => {
+        console.log('Success:', result);
+        if (result.status === 'success') {
+            formMessage.textContent = 'Thank you! Your message has been sent successfully.';
+            formMessage.className = 'form-message success';
+        } else {
+            throw new Error(result.message || 'Server error');
+        }
     })
     .catch(error => {
         console.error('Error:', error);
-        formMessage.textContent = 'Sorry, there was an error sending your message. Please try again or contact me directly at bekelealex57@gmail.com';
+        formMessage.textContent = 'Sorry, there was an error. Please contact me directly at bekelealex57@gmail.com';
         formMessage.className = 'form-message error';
-        formMessage.style.display = 'block';
     })
     .finally(() => {
+        formMessage.style.display = 'block';
         submitButton.textContent = originalText;
         submitButton.disabled = false;
+        
+        // Only reset form on success
+        if (formMessage.className.includes('success')) {
+            this.reset();
+            setTimeout(() => {
+                formMessage.style.display = 'none';
+            }, 5000);
+        }
     });
 });
