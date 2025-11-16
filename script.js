@@ -54,8 +54,8 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
     const formData = new FormData(this);
     const data = Object.fromEntries(formData);
     
-    // Replace with your Google Apps Script URL
-    const scriptURL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec'; // Replace with actual Script ID
+    // Replace with your actual Google Apps Script URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbw2o_yOUR_SCRIPT_ID/exec'; // Replace with your actual Script ID
     
     fetch(scriptURL, {
         method: 'POST',
@@ -64,16 +64,21 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
         },
         body: JSON.stringify(data)
     })
-    .then(response => {
-        document.getElementById('formMessage').textContent = 'Thank you! Your message has been sent successfully. I will get back to you soon.';
-        document.getElementById('formMessage').className = 'form-message success';
-        document.getElementById('formMessage').style.display = 'block';
-        this.reset();
-        
-        // Hide message after 5 seconds
-        setTimeout(() => {
-            document.getElementById('formMessage').style.display = 'none';
-        }, 5000);
+    .then(response => response.json()) // Parse the JSON response from the script
+    .then(data => {
+        if (data.status === 'success') {
+            document.getElementById('formMessage').textContent = 'Thank you! Your message has been sent successfully. I will get back to you soon.';
+            document.getElementById('formMessage').className = 'form-message success';
+            document.getElementById('formMessage').style.display = 'block';
+            this.reset();
+            
+            // Hide message after 5 seconds
+            setTimeout(() => {
+                document.getElementById('formMessage').style.display = 'none';
+            }, 5000);
+        } else {
+            throw new Error('Something went wrong');
+        }
     })
     .catch(error => {
         document.getElementById('formMessage').textContent = 'Sorry, there was an error sending your message. Please try again or contact me directly at bekelealex57@gmail.com';
