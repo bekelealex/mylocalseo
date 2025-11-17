@@ -1,4 +1,48 @@
-// Form Submission - FIXED RESPONSE HANDLING
+// Mobile Navigation Toggle
+const hamburger = document.querySelector('.hamburger');
+const navLinks = document.querySelector('.nav-links');
+
+hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+});
+
+// Close mobile menu when clicking on a link
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+    });
+});
+
+// Testimonial Slider
+const testimonials = document.querySelectorAll('.testimonial');
+const dots = document.querySelectorAll('.dot');
+let currentSlide = 0;
+
+function showSlide(n) {
+    testimonials.forEach(testimonial => testimonial.classList.remove('active'));
+    dots.forEach(dot => dot.classList.remove('active'));
+    
+    currentSlide = (n + testimonials.length) % testimonials.length;
+    
+    testimonials[currentSlide].classList.add('active');
+    dots[currentSlide].classList.add('active');
+}
+
+// Auto slide testimonials
+if (testimonials.length > 0) {
+    setInterval(() => {
+        showSlide(currentSlide + 1);
+    }, 5000);
+}
+
+// Dot click events
+dots.forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+        showSlide(index);
+    });
+});
+
+// Form Submission to Google Sheets - FIXED VERSION
 document.getElementById('leadForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -11,6 +55,7 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
     submitButton.disabled = true;
     formMessage.style.display = 'none';
     
+    // Get form data
     const formData = new FormData(this);
     
     // Convert to URL-encoded string
@@ -19,10 +64,8 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
         urlEncodedData.append(key, value);
     }
     
-    console.log('Sending data:', urlEncodedData.toString());
-    
-    // Your actual script URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbw01jjsPLfr0EzLvPlo1S-cwZHIGZs0AZZiIsN_0T0V/dev';
+    // Your Google Apps Script URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwHL8LAaxHA43IOeX9jiA5LOY0T241NOGZFCleZwfzDfqBzZg-wA2r39RDXOauZqO1rFg/exec';
     
     fetch(scriptURL, {
         method: 'POST',
@@ -31,57 +74,88 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
         },
         body: urlEncodedData
     })
-    .then(response => {
-        console.log('Response received, status:', response.status);
-        
-        // Check if response is OK
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        // Try to parse as JSON
-        return response.text().then(text => {
-            console.log('Raw response:', text);
-            try {
-                return JSON.parse(text);
-            } catch (e) {
-                // If not JSON, treat as success since data is saving
-                console.log('Response is not JSON, but data is saving to sheet');
-                return { status: 'success' };
-            }
-        });
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log('Parsed response data:', data);
-        
-        // SUCCESS - data is saving to your sheet
-        formMessage.textContent = 'Thank you! Your message has been sent successfully. I will get back to you soon.';
-        formMessage.className = 'form-message success';
+        if (data.status === 'success') {
+            formMessage.textContent = 'Thank you! Your message has been sent successfully. I will get back to you soon.';
+            formMessage.className = 'form-message success';
+            this.reset();
+        } else {
+            throw new Error(data.message || 'Server error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        formMessage.textContent = 'Sorry, there was an error sending your message. Please try again or contact me directly at bekelealex57@gmail.com';
+        formMessage.className = 'form-message error';
+    })
+    .finally(() => {
         formMessage.style.display = 'block';
-        this.reset();
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
         
         // Hide message after 5 seconds
         setTimeout(() => {
             formMessage.style.display = 'none';
         }, 5000);
-    })
-    .catch(error => {
-        console.error('Error occurred:', error);
-        
-        // Even if there's an error, data might still be saved
-        // Check your sheet - if data is there, show success message
-        formMessage.textContent = 'Thank you! Your message has been received. I will get back to you soon.';
-        formMessage.className = 'form-message success';
-        formMessage.style.display = 'block';
-        this.reset();
-        
-        setTimeout(() => {
-            formMessage.style.display = 'none';
-        }, 5000);
-    })
-    .finally(() => {
-        // Reset button state
-        submitButton.textContent = originalText;
-        submitButton.disabled = false;
     });
+});
+
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+// Add active class to navigation links based on scroll position
+window.addEventListener('scroll', () => {
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (scrollY >= (sectionTop - 100)) {
+            current = section.getAttribute('id');
+        }
+    });
+
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href').substring(1) === current) {
+            link.classList.add('active');
+        }
+    });
+});
+
+// Add animation on scroll
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+        }
+    });
+}, observerOptions);
+
+// Observe elements for animation
+document.querySelectorAll('.service-card, .about-content, .testimonial-slider, .contact-form').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(el);
 });
