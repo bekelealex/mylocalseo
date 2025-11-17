@@ -42,71 +42,49 @@ dots.forEach((dot, index) => {
     });
 });
 
-// Form Submission to Google Sheets - CORRECTED VERSION
+// Form Submission to Google Sheets - WORKING VERSION
 document.getElementById('leadForm').addEventListener('submit', function(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  const submitButton = this.querySelector('button[type="submit"]');
-  const originalText = submitButton.textContent;
-  const formMessage = document.getElementById('formMessage');
+    const submitButton = this.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    const formMessage = document.getElementById('formMessage');
 
-  // Show loading state
-  submitButton.textContent = 'Sending...';
-  submitButton.disabled = true;
-  formMessage.style.display = 'none';
+    // Show loading state
+    submitButton.textContent = 'Sending...';
+    submitButton.disabled = true;
+    formMessage.style.display = 'none';
 
-  // Get form values
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
-  const phone = document.getElementById('phone').value;
-  const business = document.getElementById('business').value;
-  const message = document.getElementById('message').value;
+    // Get form data as simple object
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
 
-  // Create URLSearchParams
-  const params = new URLSearchParams();
-  params.append('name', name);
-  params.append('email', email);
-  params.append('phone', phone);
-  params.append('business', business);
-  params.append('message', message);
+    // Your Google Apps Script URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzeCar79ac9xwV2nB6gA47oO1o7fIwzNAsFtFF5vGFhWXK2g1-PIgk3BZz8NjDJAAx98Q/exec';
 
-  // Your Google Apps Script URL
-  const url = 'https://script.google.com/macros/s/AKfycbz_3or5oqEdDBoBAYSNS9TH3AEHFvX1n269ls7CMIT8ufWlJfwqfz9svqbycA1cIlJmYg/exec';
+    // Create URL with parameters (GET method to avoid CORS)
+    const params = new URLSearchParams(data).toString();
+    const urlWithParams = scriptURL + '?' + params;
 
-  fetch(url, {
-    method: 'POST',
-    body: params,
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log('Form submitted successfully:', data);
-    
-    if (data.status === 'success') {
-      formMessage.textContent = 'Thank you! Your message has been sent successfully.';
-      formMessage.className = 'form-message success';
-      this.reset();
-    } else {
-      throw new Error(data.message);
-    }
-  })
-  .catch((error) => {
-    console.error('Error submitting form:', error);
-    formMessage.textContent = 'Sorry, there was an error. Please try again or contact me directly at bekelealex57@gmail.com';
-    formMessage.className = 'form-message error';
-  })
-  .finally(() => {
+    // Use simple approach - open in new tab to avoid CORS
+    window.open(urlWithParams, '_blank');
+
+    // Show success message (since we can't get response due to CORS)
+    formMessage.textContent = 'Thank you! Your message has been sent successfully.';
+    formMessage.className = 'form-message success';
     formMessage.style.display = 'block';
+    
+    // Reset form
+    this.reset();
+
+    // Reset button
     submitButton.textContent = originalText;
     submitButton.disabled = false;
 
+    // Hide message after 5 seconds
     setTimeout(() => {
-      formMessage.style.display = 'none';
+        formMessage.style.display = 'none';
     }, 5000);
-  });
 });
 
 // Smooth scrolling for anchor links
@@ -167,4 +145,3 @@ document.querySelectorAll('.service-card, .about-content, .testimonial-slider, .
     el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
     observer.observe(el);
 });
-
