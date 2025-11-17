@@ -1,55 +1,45 @@
-// Simple Form Submission - Send data to Google Apps Script (not mailto)
 document.getElementById('leadForm').addEventListener('submit', function(e) {
-    e.preventDefault();  // Prevent default form submission behavior
+  e.preventDefault();
 
-    // Get form values
-    const formData = {
-        name: document.getElementById('name').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        business: document.getElementById('business').value,
-        message: document.getElementById('message').value
-    };
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const phone = document.getElementById('phone').value;
+  const business = document.getElementById('business').value;
+  const message = document.getElementById('message').value;
 
-    // URL of your Google Apps Script Web App
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbx1OrjlGipebaZU6AvNs0hxlWEbmw6pz4Z3nfEnf6jLDTcZYJC-DOF7c-bqVBxDMHI20g/exec'; // Replace with your actual URL
+  const formData = new FormData();
+  formData.append('name', name);
+  formData.append('email', email);
+  formData.append('phone', phone);
+  formData.append('business', business);
+  formData.append('message', message);
 
-    // Send form data to Google Apps Script using fetch API
-    fetch(scriptURL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: new URLSearchParams(formData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            const formMessage = document.getElementById('formMessage');
-            formMessage.textContent = 'Your form has been submitted successfully!';
-            formMessage.className = 'form-message success';
-            formMessage.style.display = 'block';
-        } else {
-            const formMessage = document.getElementById('formMessage');
-            formMessage.textContent = 'There was an error with your submission. Please try again.';
-            formMessage.className = 'form-message error';
-            formMessage.style.display = 'block';
-        }
-    })
-    .catch(error => {
-        console.error('Error submitting the form:', error);
-        const formMessage = document.getElementById('formMessage');
-        formMessage.textContent = 'An error occurred. Please try again later.';
-        formMessage.className = 'form-message error';
-        formMessage.style.display = 'block';
-    });
+  // Replace this with your actual Google Apps Script Web App URL
+  const url = 'https://script.google.com/macros/s/AKfycbz5cvx6ak8p0tNcWHf-Bre_Cx2eYlUbuLoDppIdeii7Tz2Zd8rZCqOqhwgdvHpiZCiEIg/exec';
 
-    // Reset the form after submission
-    this.reset();
-
-    // Hide the success message after 8 seconds
-    setTimeout(() => {
-        document.getElementById('formMessage').style.display = 'none';
-    }, 8000);
+  fetch(url, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/x-www-form-urlencoded', // Make sure to specify content type
+    },
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Form submitted successfully:', data);
+    // Handle success (e.g., show success message to user)
+    const formMessage = document.getElementById('formMessage');
+    formMessage.textContent = 'Thank you for your submission!';
+    formMessage.className = 'form-message success';
+    formMessage.style.display = 'block';
+  })
+  .catch((error) => {
+    console.error('Error submitting form:', error);
+    // Handle error (e.g., show error message to user)
+    const formMessage = document.getElementById('formMessage');
+    formMessage.textContent = 'There was an error submitting your form. Please try again later.';
+    formMessage.className = 'form-message error';
+    formMessage.style.display = 'block';
+  });
 });
-
