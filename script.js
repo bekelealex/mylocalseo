@@ -12,7 +12,7 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
     };
 
     // URL of your Google Apps Script Web App
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyUYUp3FfLt41wRLR6hJmSc481QfbrYfn7Ijdd2Sh8MDtehJJL3VxkX5VqTABUCTkwsuQ/exec'; // Replace with your actual URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbx1OrjlGipebaZU6AvNs0hxlWEbmw6pz4Z3nfEnf6jLDTcZYJC-DOF7c-bqVBxDMHI20g/exec'; // Replace with your actual URL
 
     // Send form data to Google Apps Script using fetch API
     fetch(scriptURL, {
@@ -52,3 +52,4 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
         document.getElementById('formMessage').style.display = 'none';
     }, 8000);
 });
+
