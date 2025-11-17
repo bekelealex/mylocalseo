@@ -32,7 +32,7 @@ function showSlide(n) {
 if (testimonials.length > 0) {
     setInterval(() => {
         showSlide(currentSlide + 1);
-    }, 5000);
+    }, 5000); // Adjust timing here if necessary
 }
 
 // Dot click events
@@ -42,47 +42,52 @@ dots.forEach((dot, index) => {
     });
 });
 
-// SIMPLE WORKING FORM - OPENS EMAIL CLIENT
+// SIMPLE FORM SUBMISSION - SENDS DATA TO GOOGLE APPS SCRIPT
 document.getElementById('leadForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
     // Get form values
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const phone = document.getElementById('phone').value;
-    const business = document.getElementById('business').value;
-    const message = document.getElementById('message').value;
-    
-    // Create email content
-    const subject = `New Contact from ${name}`;
-    const body = `
-Name: ${name}
-Email: ${email}
-Phone: ${phone}
-Business: ${business}
-Message: ${message}
+    const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        business: document.getElementById('business').value,
+        message: document.getElementById('message').value
+    };
 
-Sent from your website.
-    `;
+    // Send form data to Google Apps Script using fetch API
+    fetch('YOUR_GOOGLE_APPS_SCRIPT_URL', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const formMessage = document.getElementById('formMessage');
+            formMessage.textContent = 'Your form has been submitted successfully.';
+            formMessage.className = 'form-message success';
+            formMessage.style.display = 'block';
+        } else {
+            throw new Error('Form submission failed.');
+        }
+    })
+    .catch(error => {
+        const formMessage = document.getElementById('formMessage');
+        formMessage.textContent = 'Something went wrong. Please try again later.';
+        formMessage.className = 'form-message error';
+        formMessage.style.display = 'block';
+        console.error('Form submission error:', error);
+    });
     
-    // Create mailto link
-    const mailtoLink = `mailto:bekelealex57@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
-    // Open email client
-    window.location.href = mailtoLink;
-    
-    // Show success message
-    const formMessage = document.getElementById('formMessage');
-    formMessage.textContent = 'Your email client is opening with a pre-filled message. Please send the email to contact me.';
-    formMessage.className = 'form-message success';
-    formMessage.style.display = 'block';
-    
-    // Reset form
+    // Reset the form after submission
     this.reset();
-    
-    // Hide message after 8 seconds
+
+    // Hide the success message after 8 seconds
     setTimeout(() => {
-        formMessage.style.display = 'none';
+        document.getElementById('formMessage').style.display = 'none';
     }, 8000);
 });
 
