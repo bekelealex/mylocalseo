@@ -65,7 +65,7 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
     }
     
     // Your Google Apps Script URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwHL8LAaxHA43IOeX9jiA5LOY0T241NOGZFCleZwfzDfqBzZg-wA2r39RDXOauZqO1rFg/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbw01jjsPLfr0EzLvPlo1S-cwZHIGZs0AZZiIsN_0T0V/dev';
     
     fetch(scriptURL, {
         method: 'POST',
@@ -159,3 +159,4 @@ document.querySelectorAll('.service-card, .about-content, .testimonial-slider, .
     el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
     observer.observe(el);
 });
+
