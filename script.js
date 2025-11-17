@@ -60,7 +60,7 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
     const data = Object.fromEntries(formData.entries());
 
     // Your Google Apps Script URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzeCar79ac9xwV2nB6gA47oO1o7fIwzNAsFtFF5vGFhWXK2g1-PIgk3BZz8NjDJAAx98Q/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbw5_pUTh1n59sBOgdFMcyniM7irka41GvQG6TC6gVUPXNcRuhQ2YdWX_5hGaA96t7JJpg/exec';
 
     // Create URL with parameters (GET method to avoid CORS)
     const params = new URLSearchParams(data).toString();
@@ -145,3 +145,4 @@ document.querySelectorAll('.service-card, .about-content, .testimonial-slider, .
     el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
     observer.observe(el);
 });
+
