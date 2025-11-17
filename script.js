@@ -34,7 +34,7 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
   params.append('message', message);
 
   // Replace this with your actual Google Apps Script Web App URL
-  const url = 'https://script.google.com/macros/s/AKfycbw01jjsPLfr0EzLvPlo1S-cwZHIGZs0AZZiIsN_0T0V/dev';
+  const url = 'https://script.google.com/macros/s/AKfycbwsOqw_dpECwOwyWqjBksXeYq7EoVt2m2-CCyhhwT6hMNjnedOggl7mALzJD48PymnK4g/exec';
 
   fetch(url, {
     method: 'POST',
@@ -90,3 +90,4 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
     formMessage.style.display = 'block';
   });
 });
+
