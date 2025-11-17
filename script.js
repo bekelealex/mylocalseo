@@ -71,7 +71,7 @@ document.getElementById('leadForm').addEventListener('submit', function(e) {
   params.append('message', message);
 
   // Your Google Apps Script URL
-  const url = 'https://script.google.com/macros/s/AKfycbzb9-qodYN64CmVgoLOBzfUeXVErItBeaAGn6NaUNtVcndzNW-nfl1z3hfmta2eIQ2pAw/exec';
+  const url = 'https://script.google.com/macros/s/AKfycbz_3or5oqEdDBoBAYSNS9TH3AEHFvX1n269ls7CMIT8ufWlJfwqfz9svqbycA1cIlJmYg/exec';
 
   fetch(url, {
     method: 'POST',
@@ -167,3 +167,4 @@ document.querySelectorAll('.service-card, .about-content, .testimonial-slider, .
     el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
     observer.observe(el);
 });
+
