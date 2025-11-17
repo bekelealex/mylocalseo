@@ -42,63 +42,48 @@ dots.forEach((dot, index) => {
     });
 });
 
-// Form Submission to Google Sheets - FIXED VERSION
+// SIMPLE WORKING FORM - OPENS EMAIL CLIENT
 document.getElementById('leadForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    const submitButton = this.querySelector('button[type="submit"]');
-    const originalText = submitButton.textContent;
+    // Get form values
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    const business = document.getElementById('business').value;
+    const message = document.getElementById('message').value;
+    
+    // Create email content
+    const subject = `New Contact from ${name}`;
+    const body = `
+Name: ${name}
+Email: ${email}
+Phone: ${phone}
+Business: ${business}
+Message: ${message}
+
+Sent from your website.
+    `;
+    
+    // Create mailto link
+    const mailtoLink = `mailto:bekelealex57@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    // Open email client
+    window.location.href = mailtoLink;
+    
+    // Show success message
     const formMessage = document.getElementById('formMessage');
+    formMessage.textContent = 'Your email client is opening with a pre-filled message. Please send the email to contact me.';
+    formMessage.className = 'form-message success';
+    formMessage.style.display = 'block';
     
-    // Show loading state
-    submitButton.textContent = 'Sending...';
-    submitButton.disabled = true;
-    formMessage.style.display = 'none';
+    // Reset form
+    this.reset();
     
-    // Get form data
-    const formData = new FormData(this);
-    
-    // Convert to URL-encoded string
-    const urlEncodedData = new URLSearchParams();
-    for (const [key, value] of formData.entries()) {
-        urlEncodedData.append(key, value);
-    }
-    
-    // Your Google Apps Script URL
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbw01jjsPLfr0EzLvPlo1S-cwZHIGZs0AZZiIsN_0T0V/dev';
-    
-    fetch(scriptURL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: urlEncodedData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            formMessage.textContent = 'Thank you! Your message has been sent successfully. I will get back to you soon.';
-            formMessage.className = 'form-message success';
-            this.reset();
-        } else {
-            throw new Error(data.message || 'Server error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        formMessage.textContent = 'Sorry, there was an error sending your message. Please try again or contact me directly at bekelealex57@gmail.com';
-        formMessage.className = 'form-message error';
-    })
-    .finally(() => {
-        formMessage.style.display = 'block';
-        submitButton.textContent = originalText;
-        submitButton.disabled = false;
-        
-        // Hide message after 5 seconds
-        setTimeout(() => {
-            formMessage.style.display = 'none';
-        }, 5000);
-    });
+    // Hide message after 8 seconds
+    setTimeout(() => {
+        formMessage.style.display = 'none';
+    }, 8000);
 });
 
 // Smooth scrolling for anchor links
@@ -159,4 +144,3 @@ document.querySelectorAll('.service-card, .about-content, .testimonial-slider, .
     el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
     observer.observe(el);
 });
-
